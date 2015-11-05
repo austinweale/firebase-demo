@@ -27,7 +27,7 @@
 	</head>
 
 	<!-- Initiate app and controller on body -->
-	<body >
+	<body ng-app="myApp" ng-controller="myCtrl">
 
 		<!-- Header with logout button -->
 		<header>
@@ -42,13 +42,14 @@
 		<div class="container">
 			
 			<!-- Sign-in/sign-up form: show if userId isn't defined -->
-			<form name="myForm" novalidate>
+			<form name="myForm" ng-show="!userId" novalidate>
 			
 				<!-- Bind model "handle" to this input, set minimum length, and make it required -->
-				<div class="form-group">
+				<div class="form-group" ng-class="{'has-error': myForm.handle.$invalid && myForm.handle.$touched}">
 					<label>Handle:</label>
-					<input name="handle" class="form-control">	
-					
+					<input name="handle" class="form-control" ng-model="handle" ng-minlength="6" required>	
+
+					<p ng-show="myForm.handle.$error.minlength">Username too short</p>
 					<!-- Add an error message if the length is too short -->	
 					
 				</div>	
@@ -61,10 +62,10 @@
 				</div>
 
 				<!-- Bind model "email" to this input and make it required -->
-				<div class="form-group">
+				<div class="form-group" ng-class="{'has-error': myForm.email.$invalid && myForm.email.$touched}">
 					<label>Email:</label>
-					<input  name="email" type="email" class="form-control"></input>
-
+					<input  ng-model="email" required name="email" type="email" class="form-control"></input>
+					<p  ng-show="myForm.email.$error.email">invalid email</p>
 					<!-- Show an error message if the email is not valid -->	
 				</div>
 
@@ -76,7 +77,7 @@
 
 				<!-- Submit buttons: should only be active if certain inputs are valid -->
 				<div class="form-group">
-					<button ng-click="signUp()" ng-disabled="myForm.$invalid" type="submit" class="btn btn-primary">Sign-up</button> 
+					<button  ng-click="signUp()" ng-disabled="myForm.$invalid" type="submit" class="btn btn-primary">Sign-up</button> 
 					<button ng-click="signIn()" ng-disabled="myForm.email.$invalid || myForm.password.$invalid" type="submit" class="btn btn-primary">Sign-in</button>
 				</div>
 
@@ -114,28 +115,28 @@
 				<div>
 
 					<!-- Use ng-repeat directive to repeat a div for each element in tweets -->
-					<div class="tweet-box">
+					<div class="tweet-box" ng-repeat="tweet in tweets | orderBy: '-time'">
 						<div>
 							<!-- Put an img tag that shows the userImage of that tweet -->
 							<img class="image" ng-src="{{users[tweet.userId].userImage}}"></img>
 							
 							<!-- Put in the twitter handle and time of tweet -->
-							<span class="handle"></span>
-							<span class="time"></span>
+							<span class="handle">{{users[tweet.userId].handle}}</span>
+							<span class="time">{{tweet.time | date}}</span>
 						</div>
 
 						<!-- Put in the text of the tweet -->
 						<div class="tweet">
-							
+							{{tweet.text}}
 						</div>
 
 						<!-- Create a section for showing tweet likes -->
 						<div class="likes">
 							<!-- Show a heart icon that, when clicked, 
 								passes your tweet to your "like" function -->
-							<i></i>
+							<i class="fa fa-heart" ng-click="like(tweet)"></i>
 							<!-- Show your total number of likes -->
-							<span></span>
+							<span>{{tweet.likes}}</span>
 						</div>
 					</div>
 				</div>
